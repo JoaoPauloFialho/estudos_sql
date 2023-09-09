@@ -1,0 +1,58 @@
+CREATE TABLE IF NOT EXISTS vendedor(
+MATRICULA INT(6) ZEROFILL PRIMARY KEY,
+NOME VARCHAR(100) NOT NULL,
+COMISSAO int(99));
+
+
+UPDATE atividades_alura.vendedor SET NOME = 'João Paulo Carneiro Fialho'
+WHERE MATRICULA = 000004;
+
+DELETE FROM vendedor WHERE MATRICULA = 4;
+
+UPDATE atividades_alura.vendedor SET COMISSAO = 10
+WHERE MATRICULA < 000235 AND MATRICULA > 000004;
+
+
+ALTER TABLE vendedor ADD COLUMN (DATA_ADMISSAO DATE);
+ALTER TABLE vendedor ADD COLUMN (DE_FERIAS BIT(1));
+
+
+INSERT INTO atividades_alura.vendedor(
+MATRICULA,
+NOME,
+COMISSAO) VALUES(
+234,
+'Maria Antonieta Vasconcelos',
+10);
+
+INSERT INTO atividades_alura.vendedor(
+MATRICULA,
+NOME,
+COMISSAO) VALUES(
+235,
+'Márcio Almeida Silva',
+8
+);
+
+INSERT INTO atividades_alura.vendedor(
+MATRICULA,
+NOME,
+COMISSAO) VALUES(
+236,
+' Cláudia Morais ',
+8
+);
+
+INSERT INTO vendedor(
+MATRICULA,
+NOME,
+COMISSAO,
+DATA_ADMISSAO,
+DE_FERIAS
+) VALUES(
+000237,
+"Luma Souza de Queiroz",
+18,
+"2023-09-01",
+1
+);
