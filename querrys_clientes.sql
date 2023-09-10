@@ -194,3 +194,87 @@ END AS STATUS_PRECO, AVG(PRECO_LISTA) AS PRECO_MEDIO FROM tbproduto
     */
 WHERE SABOR = 'Manga'
 GROUP BY EMBALAGEM, STATUS_PRECO;
+
+/*No SQL existe a clausula JOIN que serve para juntar 2 tabelas diferentes com um campo com dados em comum em uma querry
+*levando em conta a tabela a seguir
+
+    Tabela ESQUERDA               Tabela DIREITA
+Nome   Identificador          Identificador   Hobby
+
+João        1                       1         Praia
+Paulo       2                       2         Futebol
+Maria       3                       4         Arte 
+
+Existem diferentes joins:
+*/
+
+SELECT A.NOME, B.HOBBY FROM  ESQUERDA A INNER JOIN DIREITA B ON A.IDENTIFICADOR = B.IDENTIFICADOR; /*Esse A e B são AS das tabelas*/
+/*
+INNER JOIN -> retorna somente as linhas que tiverem chaves (no caso a comparação está sendo feita na coluna IDENTIFICADOR) correspondentes, tanto em A quanto em B
+    como Maria não possui nenhum hobby da tabela DIREITA e ninguém da tabela ESQUERDA tem o hobby Arte, então esses dois ficam de fora
+
+    João  Praia
+    Paulo Futebol
+*/
+
+SELECT A.NOME, B.HOBBY FROM  ESQUERDA A LEFT JOIN DIREITA B ON A.IDENTIFICADOR = B.IDENTIFICADOR;
+/*
+LEFT JOIN -> retornar todas da tabela a esquerda e somente os correspondentes a direita
+
+    João  Praia
+    Paulo Futebol
+    Maria NULL
+*/
+
+SELECT A.NOME, B.HOBBY FROM  ESQUERDA A RIGTH JOIN DIREITA B ON A.IDENTIFICADOR = B.IDENTIFICADOR;
+/*
+RIGTH JOIN -> é o oposto do LEFT JOIN, retorna todos da tabela a direita e somente os correspondentes a esquerda
+    
+    João  Praia
+    Paulo Futebol
+    NULL  Arte
+*/
+
+SELECT A.NOME, B.HOBBY FROM  ESQUERDA A FULL JOIN DIREITA B ON A.IDENTIFICADOR = B.IDENTIFICADOR;
+/*
+FULL JOIN -> pega tudo de todas as tabelas
+
+    João  Praia
+    Paulo Futebol
+    Maria NULL
+    NULL  Arte
+*/
+
+SELECT A.NOME, B.HOBBY FROM ESQUERDA A, DIREITA B;
+/*
+CROSS JOIN -> faz um produto cartesiano das 2 tabelas
+
+    João  Praia
+    Paulo Praia
+    Maria Praia
+    João  Futebol
+    Paulo Futebol
+    Maria Futebol
+    João  Arte
+    Paulo Arte
+    Maria Arte
+*/
+
+
+SELECT A.NOME, B.CPF, MAX(B.VALOR_COMPRA) AS MAIOR_COMPRA FROM vendedor A INNER JOIN tbnotas_fiscais B ON B.MATRICULA = A.MATRICULA GROUP BY A.NOME, B.CPF;
+/*Utilizando o JOIN ainda é possível utilizar o GROUP BY para fazer agrupamento e relizar contagens, etc
+*/
+
+SELECT A.NOME, B.CPF, MAX(B.VALOR_COMPRA) AS MAIOR_COMPRA FROM vendedor A INNER JOIN tbnotas_fiscais B ON B.MATRICULA = A.MATRICULA WHERE B.VALOR_COMPRA > 6000 GROUP BY A.NOME, B.CPF;
+SELECT A.NOME, B.CPF, MAX(B.VALOR_COMPRA) AS MAIOR_COMPRA FROM vendedor A INNER JOIN tbnotas_fiscais B ON B.MATRICULA = A.MATRICULA GROUP BY A.NOME, B.CPF HAVING MAIOR_COMPRA > 6000;
+SELECT A.NOME, B.CPF, MAX(B.VALOR_COMPRA) AS MAIOR_COMPRA FROM vendedor A INNER JOIN tbnotas_fiscais B ON B.MATRICULA = A.MATRICULA GROUP BY A.NOME, B.CPF HAVING MAIOR_COMPRA > 6000 ORDER BY MAIOR_COMPRA ASC;
+SELECT A.NOME, COUNT(B.CPF) AS VENDAS FROM vendedor A INNER JOIN tbnotas_fiscais B ON B.MATRICULA = A.MATRICULA GROUP BY A.NOME ORDER BY VENDAS ASC; /*Quantidade de vendas de cada vendedor*/
+/*Assim como é possível utilizar outras clausulas como WHERE para filtrar as linhas das tabelas, o HAVING para filtrar os agrupamentos, o ORDER BY para ordenar a saída da querry, etc.
+*/
+
+SELECT A.NOME, B.CPF, B.VALOR_COMPRA FROM vendedor A, tbnotas_fiscais B WHERE A.MATRICULA = B.MATRICULA;
+/*
+É possível fazer o INNER JOIN sem escrever ele, mas sla, é melhor colocar o INNER JOIN pra ser mais legível
+*/
+
+
