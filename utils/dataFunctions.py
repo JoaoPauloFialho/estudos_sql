@@ -42,8 +42,8 @@ def gerarNomes():
     return f'{NOMES[randint(0, NOMES.__len__()-1)]} {SOBRENOMES[randint(0, SOBRENOMES.__len__()-1)]}'
 
 
-def gerarDataVenda():
-    ano = randint(2020, 2023);
+def gerarData(min_year, max_year):
+    ano = randint(min_year, max_year);
     mes = randint(1, 12);
 
     if (mes == 2):

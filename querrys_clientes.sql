@@ -82,6 +82,9 @@ SELECT * FROM tbcliente LIMIT 4; /*Vai mostrar somente 4 linhas da querry total*
 SELECT * FROM tbcliente LIMIT 2,4; /*Vai mostrar da linha 2 da querry as 4 linhas seguintes a ela*/
 
 
+
+
+
 /*No sql é possível ordenar as saídas da consulta utilizando o ORDER BY, ASC "Crescente" DESC "Decrescente"*/
 SELECT * FROM tbproduto ORDER BY EMBALAGEM, PRECO_LISTA ASC; /*Quando o ORDER BY possui 2 campos ele ordena o campo 1 e depois o campo 2*/
 /*
@@ -151,7 +154,6 @@ SELECT CIDADE, BAIRRO, MAX(IDADE) AS MAIOR_IDADE
 FROM tbcliente WHERE (ESTADO = 'RJ' AND SEXO = 'M') 
 GROUP BY CIDADE, BAIRRO ORDER BY MAIOR_IDADE;
 
-
 /*No sql existe uma cláusula chamada HAVING que serve para impor condições nas agregações*/
 /*Nesse exemplo aqui, ele só vai colocar no agrupamento as cidades e bairros que possuirem o limite de crédito total maior que 100000*/
 SELECT CIDADE, BAIRRO, MAX(LIMITE_CREDITO) AS LIMITE_CREDITO FROM tbcliente 
@@ -160,6 +162,10 @@ GROUP BY CIDADE, BAIRRO HAVING SUM(LIMITE_CREDITO) > 100000;
 
 /*É possível utilizar expressões lógicas dentro da cláusula having*/
 SELECT EMBALAGEM, MAX(PRECO_LISTA) AS MAIOR_PRECO, MIN(PRECO_LISTA) AS MENOR_PRECO FROM tbproduto GROUP BY EMBALAGEM HAVING MENOR_PRECO > 2 AND MAIOR_PRECO < 5; 
+
+
+
+
 
 /*A clausula CASE serve para classificar a saída de resultados, você basicamente pega um campo e faz operações lógicas nele, se ele corresponder a essa operação na saída ele recebe na visualização o valor daquela operação*/
 SELECT NOME, 
@@ -194,6 +200,10 @@ END AS STATUS_PRECO, AVG(PRECO_LISTA) AS PRECO_MEDIO FROM tbproduto
     */
 WHERE SABOR = 'Manga'
 GROUP BY EMBALAGEM, STATUS_PRECO;
+
+
+
+
 
 /*No SQL existe a clausula JOIN que serve para juntar 2 tabelas diferentes com um campo com dados em comum em uma querry
 *levando em conta a tabela a seguir
@@ -277,4 +287,152 @@ SELECT A.NOME, B.CPF, B.VALOR_COMPRA FROM vendedor A, tbnotas_fiscais B WHERE A.
 É possível fazer o INNER JOIN sem escrever ele, mas sla, é melhor colocar o INNER JOIN pra ser mais legível
 */
 
+SELECT DISTINCT A.CPF, A.NOME, B.CPF FROM tbcliente A LEFT JOIN notas_fiscais B ON A.CPF = B.CPF WHERE B.CPF IS NULL;
+/*
+Esse comando realizará um left join, ou seja, todos os clientes irão aparecer na consulta e somente os seus correspondentes aparecerão de notas fiscais, e o where checará se o CPF da nota fiscal é nulo
+basicamente ele serve pra checar se o cliente já comprou naquela empresa ou não
+*/
+SELECT DISTINCT A.CPF, A.NOME, B.CPF FROM tbcliente A LEFT JOIN notas_fiscais B ON A.CPF = B.CPF WHERE B.CPF IS NULL AND YEAR(B.DATA_VENDA) = 2015;
+/*
+Variação da querry antiga porém somente os que não compraram em 2015
+*/
 
+/*
+No SQL é possível unir 2 consultas, para isso funcionar os campos usados no UNION, para isso acontecer precisa ter o mesmo número de campos nas duas consultas e os campos devem ter os mesmos tipos, não aparecem consultas repetidas
+*/
+
+
+
+
+
+SELECT DISTINCT BAIRRO FROM tbcliente
+UNION
+SELECT DISTINCT BAIRRO FROM vendedor;
+/*
+Bodocongó
+Centro
+Santa Rosa
+Catolé
+Alto Branco
+*/
+
+/*
+Diferentemente do UNION o UNION ALL mostra consultas repetidas
+*/
+SELECT DISTINCT BAIRRO FROM tbcliente
+UNION ALL
+SELECT DISTINCT BAIRRO FROM vendedor;
+/*
+Bodocongó
+Centro
+Santa Rosa
+Santa Rosa    como Santa Rosa existem nas duas consultas e está sendo utilizado 
+Catolé
+Alto Branco
+*/
+
+SELECT DISTINCT BAIRRO, NOME, 'CLIENTE' AS TIPO FROM tbcliente
+UNION ALL
+SELECT DISTINCT BAIRRO, NOME, 'VENDEDOR' AS TIPO FROM vendedor;
+/*
+É possível acrescentar um campo a mais na consulta com um AS pra por exemplo definir se o retorno da querry é correspondente ao cliente ou vendedor
+
+BAIRRO      NOME    TIPO
+
+Bodocongó   João    CLIENTE
+Centro      Lucas   VENDEDOR
+Santa Rosa  Maria   CLIENTE
+Santa Rosa  José    CLIENTE
+Catolé      Chico   VENDEDOR
+Alto Branco Silva   VENDEDOR
+*/
+
+SELECT DISTINCT BAIRRO, NOME, 'CLIENTE' AS TIPO_CLIENTE FROM tbcliente
+UNION ALL
+SELECT DISTINCT BAIRRO, NOME, 'VENDEDOR' AS TIPO_VENDEDOR FROM vendedor;
+/*
+Se dois campos tiverem nomes diferentes, na hora da união o AS do campo será o da primeira tabela
+
+BAIRRO      NOME    TIPO_CLIENTE
+
+Bodocongó   João    CLIENTE
+Centro      Lucas   VENDEDOR
+Santa Rosa  Maria   CLIENTE
+Santa Rosa  José    CLIENTE
+Catolé      Chico   VENDEDOR
+Alto Branco Silva   VENDEDOR
+*/
+
+
+
+
+
+/*
+No SQL existe a possibilidade de realizar subconsultas, é basicamente você usar um SELECT dentro de uma consulta, pode ser utilizado para realizar consultas por exemplo
+
+   tabela 1    tabela 2
+    X   Y        Y
+    A   2        1
+    A   1        2
+    B   2        3
+    B   3
+    B   1
+    C   1
+    C   5
+    C   2
+    D   3
+*/
+
+SELECT X, Y FROM tabela_1 WHERE Y IN(1,2,3);
+SELECT X, Y FROM tabela_1 WHERE Y IN (SELECT Y FROM tabela_2);
+/*
+Essas duas consultasi irão retornar os mesmo resultado
+
+    X   Y
+    A   2
+    A   1
+    B   2
+    B   3
+    B   1
+    C   1
+    C   2
+    D   3
+*/
+
+SELECT X , SUM(Y) AS NEW_Y FROM tabela_1 GROUP BY X;
+/*
+X   NEW_Y
+A     3
+B     6
+C     8
+D     3
+*/
+SELECT Z.X, Z.NEW_Y FROM (SELECT X, SUM(Y) AS NEW_Y FROM tabela_1 GROUP BY X) Z WHERE Z.NEW_Y = 3; /*Vai fazer a filtragem em cima da tabela do group by*/
+/*
+x   NEW_Y
+A     3
+D     3
+*/
+
+/*
+Como visto nos comandos acima, é possível realizar a subconsulta para retornar tabelas, logo, você pode usar um FROM nessa subconsulta para fazer a consulta nela, você pode usar a subconsulta no IN com um campo para checar se o campo que você está analisando 
+está em determinada tabela, e etc
+*/
+SELECT N.NOME_VENDEDOR AS 'NOME VENDEDOR', N.MAIOR_VENDA AS 'MAIOR VENDA' 
+FROM (
+	SELECT B.NOME AS NOME_VENDEDOR, A.MATRICULA AS MATRICULA_VENDEDOR , MAX(A.VALOR_COMPRA) AS MAIOR_VENDA FROM tbnotas_fiscais AS A /*Vai basicamente coletar os vendedores que cumpriram a meta ficticia de 9900*/
+    INNER JOIN vendedor AS B ON B.MATRICULA = A.MATRICULA GROUP BY B.NOME, A.MATRICULA
+) N WHERE MAIOR_VENDA > 9900;
+
+SELECT * FROM tbcliente WHERE BAIRRO IN (SELECT DISTINCT BAIRRO FROM tbvendedor); /*Coleta informações de clientes que morem no mesmo bairro que determinado vendedor*/
+SELECT X.EMBALAGEM, X.PRECO_MAXIMO FROM (SELECT EMBALAGEM, MAX(PRECO_LISTA), AS PRECO_MAXIMO FROM tbproduto GROUP BY EMBALAGEM) X; /*Coleta as embalagens e preços máximos de cada produto*/
+
+/*Basicamente quando realizamos uma subconsulta o SQL analisa aquela subconsulta como se fosse uma tabela*/
+
+
+
+
+
+/*No SQL é possível criar VIEWS que são basicamente visões do nosso banco de dados, nós escolhemos oque alguém quer ver e criamos uma tabela pra isso*/
+CREATE OR REPLACE VIEW 'VW_EMBALAGENS_MAIS_CARAS' AS SELECT X.EMBALAGEM, X.PRECO_MAXIMO FROM (SELECT EMBALAGEM, MAX(PRECO_LISTA), AS PRECO_MAXIMO FROM tbproduto GROUP BY EMBALAGEM) X;
+/*Não vou me aprofundar muito em VIEW pq é literalmente pegar uma querry e criar uma tabela com ela, então você pode fazer JOIN, SELECT, UNION, etc, ela é literalmente uma tabela criada com base em um SELECT*/

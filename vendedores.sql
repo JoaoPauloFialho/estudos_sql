@@ -51,7 +51,7 @@ DATA_ADMISSAO,
 DE_FERIAS
 ) VALUES(
 000237,
-"Luma Souza de Queiroz",
+"Chica Lima",
 18,
 "2023-09-01",
 1
