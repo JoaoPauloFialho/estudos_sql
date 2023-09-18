@@ -1,3 +1,5 @@
+SELECT 'TESTES'; /*É possível utilizar o select sem selecionar a tabela, aí é como se você tivesse selecionando uma constante*/
+
 SELECT * FROM tbcliente;
 
 SELECT CPF, NOME, PRIMEIRA_COMPRA FROM tbcliente;
@@ -436,3 +438,26 @@ SELECT X.EMBALAGEM, X.PRECO_MAXIMO FROM (SELECT EMBALAGEM, MAX(PRECO_LISTA), AS 
 /*No SQL é possível criar VIEWS que são basicamente visões do nosso banco de dados, nós escolhemos oque alguém quer ver e criamos uma tabela pra isso*/
 CREATE OR REPLACE VIEW 'VW_EMBALAGENS_MAIS_CARAS' AS SELECT X.EMBALAGEM, X.PRECO_MAXIMO FROM (SELECT EMBALAGEM, MAX(PRECO_LISTA), AS PRECO_MAXIMO FROM tbproduto GROUP BY EMBALAGEM) X;
 /*Não vou me aprofundar muito em VIEW pq é literalmente pegar uma querry e criar uma tabela com ela, então você pode fazer JOIN, SELECT, UNION, etc, ela é literalmente uma tabela criada com base em um SELECT*/
+
+
+
+
+
+/*No SQL existem diversas funções divididas em 3 tipos, de texto, numérica e de data e hora*/
+/*Lembrando que funções são as coisas que mais mudam de um banco de dados para outros, as funções usadas aqui nesses exemplos são dos MySQL*/
+
+/*Função de manipulação de string, exs*/
+SELECT UPPER(NOME) FROM tbcliente;
+SELECT CONCAT(NOME, " ",CPF) FROM tbcliente; /*Você pode concatenar campos da tabela*/
+SELECT CONCAT(ENDERECO1, " ", ENDERECO1, ", ", BAIRRO, ", ", CIDADE, ", ", ESTADO, ", ", CEP) FROM tbcliente; /*Mostrar o endereço completo de um cliente*/
+
+/*Função de data*/
+SELECT CURRENT_TIMESTAMP();
+SELECT DATEDIFF(DATA_NASCIMENTO, CURRENT_TIMESTAMP()) FROM tbcliente; /*Diferença em dias*/
+SELECT ADDDATE(DATA_NASCIMENTO, INTERVAL 100 YEAR) FROM tbcliente;
+
+/*Função matemática*/
+SELECT SQRT(64);
+/*Aquelas funções agregadoras, COUNT(), AVG(), MAX(), são funções matemáticas*/
+
+/*É possível juntar as funções, por exemplo CONCAT(DATE_FORMAT(CURRENT_TIMESTAMP(), "%d/%m/%Y"))*/
